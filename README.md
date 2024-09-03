@@ -1,4 +1,6 @@
 # Dr. Docu
+![Doctor Docu](dr-docu.png "a title")
+
 
 Questo strumento consente di caricare documenti PDF, creare un archivio di vettori (vectorstore) utilizzando embeddings testuali, e ottenere risposte da un modello LLM (Large Language Model) basato sui contenuti dei PDF forniti.
 
@@ -36,6 +38,7 @@ Segui questi passaggi per configurare l'ambiente di sviluppo:
         export GROQ_API_KEY=la-tua-api-key
         ```
     - Oppure Impostala all'interno del .env
+    <br>
 
 5. **Scarica e installa Ollama:**
     - Segui le istruzioni su [Ollama](https://www.ollama.com) per scaricare e installare il software.
