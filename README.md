@@ -1,6 +1,7 @@
 # Dr. Docu
-![Doctor Docu](dr-docu.png "a title")
-
+<p align="center">
+  <img src="dr-docu.png" alt="Doctor Docu" title="a title" />
+</p>
 
 Questo strumento consente di caricare documenti PDF, creare un archivio di vettori (vectorstore) utilizzando embeddings testuali, e ottenere risposte da un modello LLM (Large Language Model) basato sui contenuti dei PDF forniti.
 
