@@ -40,6 +40,7 @@ def sidebar_api_key_configuration():
     return groq_api_key
 
 
+
 def sidebar_groq_model_selection():
     
     
@@ -52,6 +53,8 @@ def sidebar_groq_model_selection():
 
     st.sidebar.subheader("Scegli il Modello")
     selected_model_id = st.sidebar.selectbox('Select the Model', model_options, label_visibility="collapsed")
+    
+
 
     return selected_model_id
 
@@ -101,9 +104,25 @@ def create_vectorstore(pdf_docs):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
+def update_message_history(user_message, ai_response):
+    st.session_state.message_history.append({"role": "user", "content": user_message})
+    st.session_state.message_history.append({"role": "ai", "content": ai_response})
 
+# Function to generate prompt with limited history
+def generate_prompt_from_history(history, length):
+    prompt = ""
+    # Use only the last 'length' messages
+    history_to_use = history[-length:]
+    for message in history_to_use:
+        prompt += f"{message['role']}: {message['content']}\n"
+    return prompt
 
 # Get response from llm of user asked question
+# def get_llm_response(llm, prompt, question):
+#     document_chain = create_stuff_documents_chain(llm, prompt)
+#     retrieval_chain = create_retrieval_chain(st.session_state.vector_store.as_retriever(), document_chain)
+#     response = retrieval_chain.invoke({'input': question})
+#     return response
 def get_llm_response(llm, prompt, question):
     document_chain = create_stuff_documents_chain(llm, prompt)
     retrieval_chain = create_retrieval_chain(st.session_state.vector_store.as_retriever(), document_chain)

@@ -18,6 +18,8 @@ if "conversation" not in st.session_state:
     st.session_state.conversation = None
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = None
+if 'message_history' not in st.session_state:
+    st.session_state.message_history = []
 if "prompt" not in st.session_state:
     st.session_state.prompt = False
 
@@ -46,6 +48,15 @@ with col2:
     st.write("")
     st.write("Benvenuto in Dr. Docu! Questa app ti consente di chattare con i tuoi documenti PDF. Carica i tuoi documenti, fai una domanda e ottieni una risposta accurata basata sul contenuto dei tuoi documenti. Prova subito!")
 
+# Slider for choosing the length of history
+history_length = st.sidebar.slider(
+    "Select History Length",
+    min_value=1,
+    max_value=20,
+    value=5,  # Default value
+    step=1
+)
+    
 # ---- NAVIGATION MENU -----
 selected = option_menu(
     menu_title=None,
@@ -93,9 +104,15 @@ if selected == "Dr. Docu":
         st.chat_message("user").write(question)
 
         with st.spinner('Elaborando...'):
-            st.session_state.response = get_llm_response(llm, prompt, question)
+            promptH = generate_prompt_from_history(st.session_state.message_history,history_length)
+            # Add the current question to the prompt
+            promptH += f"user: {question}\n"
+            print (promptH)
+
+            st.session_state.response = get_llm_response(llm, prompt, promptH)
             st.session_state.messages.append({"role": "assistant", "content": st.session_state.response['answer']})
             st.chat_message("assistant").write(st.session_state.response['answer'])
+            update_message_history(question, st.session_state.response['answer'])
 
 # ----- SETUP REFERENCE MENU ------
 if selected == "Riferimenti":
