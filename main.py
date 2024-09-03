@@ -5,7 +5,7 @@ from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 
 # --- PAGE CONFIGURATION ---
-st.set_page_config(page_title="Dr. Docu", page_icon="bricks", layout="centered")
+st.set_page_config(page_title="Dr. Docu", page_icon="dr-docu-icon.ico", layout="centered")
 
 # --- SETUP SESSION STATE VARIABLES ---
 if "vector_store" not in st.session_state:
@@ -29,9 +29,22 @@ groq_api_key = sidebar_api_key_configuration()
 model = sidebar_groq_model_selection()
 
 # --- MAIN PAGE CONFIGURATION ---
-st.title("Dr. Docu :male-doctor:")
-st.write("*Parla Direttamente con i tuoi Documenti! :books:*")
-st.write(':blue[***Powered by Groq AI Inference Technology***]')
+
+# st.title("Dr. Docu")+st.image("dr-docu.png", width=256,align="center")
+# st.write("*Parla Direttamente con i tuoi Documenti! :books:*")
+# st.write(':blue[***Powered by Groq AI Inference Technology***]')
+
+# --- HERO SECTION ---
+col1, col2 = st.columns(2, gap="small")
+with col1:
+    st.image("dr-docu.png", width=230)
+
+with col2:
+    st.title("Dr. Docu")
+    st.write("*Parla Direttamente con i tuoi Documenti! :books:*")
+    st.write(':blue[***Powered by Groq AI Inference Technology***]')
+    st.write("")
+    st.write("Benvenuto in Dr. Docu! Questa app ti consente di chattare con i tuoi documenti PDF. Carica i tuoi documenti, fai una domanda e ottieni una risposta accurata basata sul contenuto dei tuoi documenti. Prova subito!")
 
 # ---- NAVIGATION MENU -----
 selected = option_menu(
@@ -75,8 +88,7 @@ if selected == "Dr. Docu":
         st.chat_message(msg["role"]).write(msg["content"])
 
     container = st.container(border=True)
-    if question := st.chat_input(placeholder='Inserisci la tua domanda qui...', key="question",
-                                 disabled=not st.session_state.prompt):
+    if question := st.chat_input(placeholder='Inserisci la tua domanda qui...', key="question", disabled=not st.session_state.prompt):
         st.session_state.messages.append({"role": "user", "content": question})
         st.chat_message("user").write(question)
 
