@@ -70,7 +70,23 @@ def read_pdf_data(pdf_docs):
 
 
 # Split data into chunks
+
+# RecursiveCharacterTextSplitter is used to split text into smaller chunks.
+# 
+# chunk_size=1000: Defines the maximum size of each chunk in number of characters.
+#                  Each chunk will have up to 1,000 characters.
+# 
+# chunk_overlap=200: Specifies the number of characters that will overlap between
+#                    consecutive chunks. Each chunk will overlap with the previous
+#                    one by 200 characters to maintain context.
+# 
+# This splitter works recursively to avoid cutting text at unnatural boundaries, 
+# like in the middle of a word.
 def split_data(text):
+    print(f"text", text)
+    #output text to a pdf file
+    with open("output.txt", "w") as text_file:
+        text_file.write(text)
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     text_chunks = text_splitter.split_text(text)
     print(f"Number of text chunks created: {len(text_chunks)}")
@@ -79,7 +95,7 @@ def split_data(text):
 
 
 def get_embedding_function():
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
     print(f"Using embedding model: {embeddings.model}")
     return embeddings
@@ -87,22 +103,27 @@ def get_embedding_function():
 
 # Create vectorstore
 def create_vectorstore(pdf_docs):
-    raw_text = read_pdf_data(pdf_docs)  # Get PDF text
-    text_chunks = split_data(raw_text)  # Get the text chunks
+    raw_text = read_pdf_data(pdf_docs)
+    text_chunks = split_data(raw_text)
 
-    # Check if text_chunks is empty
     if not text_chunks:
-        raise ValueError("No text chunks were created. Please check the input PDF documents.")
+        raise ValueError("No text chunks created.")
+        
+    embeddings = get_embedding_function()
 
-    embeddings = get_embedding_function()  # Get the embedding function
+    # Check each chunk's embedding
+    valid_chunks = []
+    for chunk in text_chunks:
+        embedding = embeddings.embed_query(chunk)
+        if embedding:
+            valid_chunks.append(chunk)
 
-    # Check if embeddings are being generated
-    sample_embedding = embeddings.embed_query(text_chunks[0])
-    if not sample_embedding:
-        raise ValueError("Failed to generate embeddings. Please check the embedding function.")
+    if not valid_chunks:
+        raise ValueError("No valid chunks for embedding.")
 
-    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+    vectorstore = FAISS.from_texts(texts=valid_chunks, embedding=embeddings)
     return vectorstore
+
 
 def update_message_history(user_message, ai_response):
     st.session_state.message_history.append({"role": "user", "content": user_message})

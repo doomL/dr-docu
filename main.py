@@ -65,7 +65,7 @@ selected = option_menu(
     orientation="horizontal",
 )
 
-llm = ChatGroq(groq_api_key=groq_api_key, model_name=model)
+llm = ChatGroq(groq_api_key=groq_api_key, model_name=model, max_tokens=8000)
 
 prompt = ChatPromptTemplate.from_template(
     """
